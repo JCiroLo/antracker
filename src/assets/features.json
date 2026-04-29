@@ -1,0 +1,30 @@
+{
+  "version": "1.1",
+  "features": [
+    {
+      "title": "¡Ahora puedes registrar tus ingresos!",
+      "description": "Lleva un control completo de tus finanzas con la nueva funcionalidad de ingresos."
+    },
+    {
+      "title": "Nueva vista de reportes con gráficos dinámicos.",
+      "description": "Visualiza tus datos de manera más clara con gráficos interactivos y personalizables."
+    },
+    {
+      "title": "Pagos únicos disponibles (one-time).",
+      "description": "Ahora puedes registrar pagos únicos de manera rápida y sencilla."
+    },
+    {
+      "title": "Soporte para categorías personalizadas.",
+      "description": "Crea y organiza tus propias categorías para un mejor control de tus datos."
+    },
+    {
+      "title": "Navegación entre meses y años.",
+      "description": "Explora tus datos históricos fácilmente con la nueva funcionalidad de navegación temporal."
+    },
+    {
+      "title": "Mejoras de rendimiento en la carga de datos.",
+      "description": "Experimenta tiempos de carga más rápidos y una navegación más fluida."
+    }
+  ],
+  "image": "/whatsnew.jpg"
+}
