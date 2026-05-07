@@ -91,6 +91,10 @@ const TransactionProvider: React.FC<TransactionProviderProps> = ({ children }) =
 
     Logger.log("updated template", updatedTransactionSummary);
 
+    if (!updatedTransactionSummary) {
+      return;
+    }
+
     queryClient.setQueryData(["fetch-transaction-templates", user?.uid], (oldData: TransactionSummary[]) => {
       if (!oldData) return oldData;
 
@@ -109,10 +113,14 @@ const TransactionProvider: React.FC<TransactionProviderProps> = ({ children }) =
 
     Logger.log("created template", newTransactionSummary);
 
+    if (!newTransactionSummary) {
+      return;
+    }
+
     queryClient.setQueryData(["fetch-transaction-templates", user?.uid], (oldData: TransactionSummary[]) => {
       if (!oldData) return oldData;
 
-      return [...oldData, newTransactionSummary] as TransactionSummary[];
+      return [newTransactionSummary, ...oldData] as TransactionSummary[];
     });
   }
 
@@ -120,6 +128,10 @@ const TransactionProvider: React.FC<TransactionProviderProps> = ({ children }) =
     const newTransactionSummary = await $TransactionTemplate.update(id, template);
 
     Logger.log("updated template", newTransactionSummary);
+
+    if (!newTransactionSummary) {
+      return;
+    }
 
     queryClient.setQueryData(["fetch-transaction-templates", user?.uid], (oldData: TransactionSummary[]) => {
       if (!oldData) return oldData;
@@ -158,6 +170,10 @@ const TransactionProvider: React.FC<TransactionProviderProps> = ({ children }) =
     const newRecord = await $TransactionRecord.update(id, record);
 
     Logger.log("updated record", newRecord);
+
+    if (!newRecord) {
+      return;
+    }
 
     queryClient.setQueryData(["fetch-transaction-records", user?.uid], (oldData: Transaction[]) => {
       if (!oldData) return oldData;

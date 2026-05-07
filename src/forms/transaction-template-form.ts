@@ -1,4 +1,4 @@
-import type { TransactionTemplate, FrequencyUnit } from "@/types/transaction";
+import type { TransactionTemplate, FrequencyUnit, TransactionType } from "@/types/transaction";
 import type { KeysToCamelCase } from "@/types/utils";
 
 export type TransactionTemplateFormObject = KeysToCamelCase<Omit<TransactionTemplate, "created_at" | "id" | "user_id" | "times">>;
@@ -17,7 +17,6 @@ const TransactionTemplateForm = {
   toObject(formData: FormData): TransactionTemplateFormObject {
     const rawAmount = formData.get(this.formKeys.amount) as string;
     const isSinglePayment = formData.get(this.formKeys.isSinglePayment) === "on" || formData.get(this.formKeys.isSinglePayment) === "true";
-    const isIncome = formData.get(this.formKeys.type) === "on";
 
     return {
       isSinglePayment,
@@ -27,7 +26,7 @@ const TransactionTemplateForm = {
       startDate: (formData.get(this.formKeys.startDate) as string) || null,
       frequencyValue: isSinglePayment ? null : Number(formData.get(this.formKeys.frequencyValue)),
       frequencyUnit: isSinglePayment ? null : (formData.get(this.formKeys.frequencyUnit) as FrequencyUnit),
-      type: isIncome ? "income" : "expense",
+      type: formData.get(this.formKeys.type) as TransactionType,
     };
   },
 };

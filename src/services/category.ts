@@ -1,5 +1,5 @@
 import xior from "@/lib/xior";
-import type { Category } from "@/types/category";
+import type { Category, NewCategory, UpdateCategory } from "@/types/category";
 
 type GetAllOptions = {
   limit?: number;
@@ -17,12 +17,12 @@ const $Category = {
 
     return data;
   },
-  async create(category: Omit<Category, "id">) {
+  async create(category: NewCategory) {
     const { data } = await xior.post<Category>("/categories", category);
 
     return data;
   },
-  async update(id: string, category: Partial<Omit<Category, "id" | "userId">>) {
+  async update(id: string, category: UpdateCategory) {
     const { data } = await xior.put<Category>(`/categories/${id}`, category);
 
     return data;

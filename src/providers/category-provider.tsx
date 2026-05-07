@@ -4,13 +4,17 @@ import $Category from "@/services/category";
 import useSessionStore from "@/stores/use-session-store";
 import queryClient from "@/lib/query-client";
 import Logger from "@/lib/logger";
-import type { Category } from "@/types/category";
+import type { Category, NewCategory } from "@/types/category";
 
 type CategoryContextType = {
+  actions: {
+    create: (category: NewCategory) => Promise<Category | undefined>;
+    delete: (id: string) => Promise<void>;
+    update: (id: string, category: Category) => Promise<void>;
+  };
   values: Category[];
   isLoading: boolean;
   query: ReturnType<typeof useQuery>;
-  refresh: () => Promise<void>;
 };
 
 type CategoryProviderProps = {
@@ -37,8 +41,50 @@ const CategoryProvider: React.FC<CategoryProviderProps> = ({ children }) => {
     },
   });
 
-  async function refreshCategories() {
-    await queryClient.invalidateQueries({ queryKey: ["fetch-categories", user?.uid] });
+  async function create(category: NewCategory) {
+    const newCategory = await $Category.create(category);
+
+    Logger.log("created category", newCategory);
+
+    if (!newCategory) {
+      return;
+    }
+
+    queryClient.setQueryData(["fetch-categories", user?.uid], (oldData: Category[]) => {
+      if (!oldData) return oldData;
+
+      return [newCategory, ...oldData] as Category[];
+    });
+
+    return newCategory;
+  }
+
+  async function update(id: string, category: Category) {
+    const updatedCategory = await $Category.update(id, category);
+
+    Logger.log("updated category", updatedCategory);
+
+    if (!updatedCategory) {
+      return;
+    }
+
+    queryClient.setQueryData(["fetch-categories", user?.uid], (oldData: Category[]) => {
+      if (!oldData) return oldData;
+
+      return oldData.map((category) => (category.id === id ? updatedCategory : category)) as Category[];
+    });
+  }
+
+  async function remove(id: string) {
+    await $Category.delete(id);
+
+    Logger.log("deleted category", id);
+
+    queryClient.setQueryData(["fetch-categories", user?.uid], (oldData: Category[]) => {
+      if (!oldData) return oldData;
+
+      return oldData.filter((category) => category.id !== id) as Category[];
+    });
   }
 
   return (
@@ -47,7 +93,7 @@ const CategoryProvider: React.FC<CategoryProviderProps> = ({ children }) => {
         values: categories.data || [],
         isLoading: categories.isLoading,
         query: categories,
-        refresh: refreshCategories,
+        actions: { create, update, delete: remove },
       }}
     >
       {children}

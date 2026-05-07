@@ -34,6 +34,7 @@ export type TransactionSummary = {
   is_expiring_soon: boolean;
   is_overdue: boolean;
   is_paid: boolean;
+  is_single_payment: boolean;
   record: TransactionRecord | null;
   template: TransactionTemplate;
 };

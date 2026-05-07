@@ -12,15 +12,16 @@ import {
   Divider,
   FormControlLabel,
   Checkbox,
+  Collapse,
 } from "@mui/material";
 import { NumericFormat } from "react-number-format";
 import { sileo } from "sileo";
 import dayjs from "dayjs";
+import ToggleRadio from "@/components/ui/toggle-radio";
 import useCategories from "@/hooks/use-categories";
 import useTransactions from "@/hooks/use-transactions";
 import CategoryForm from "@/forms/category-form";
 import TransactionTemplateForm from "@/forms/transaction-template-form";
-import $Category from "@/services/category";
 import useSessionStore from "@/stores/use-session-store";
 import Contents from "@/lib/contents";
 import type { TransactionTemplate, TransactionType } from "@/types/transaction";
@@ -38,11 +39,13 @@ const TransactionFormDialog: React.FC<TransactionFormDialogProps> = ({ open, onC
   const { actions } = useTransactions();
 
   const [isSinglePayment, setIsSinglePayment] = useState(template?.is_single_payment || false);
-  const [isIncome, setIsIncome] = useState(false);
+  const [type, setType] = useState<TransactionType>(template?.type || "expense");
   const [category, setCategory] = useState<string | "add-category" | "none">(template?.category_id || "none");
   const [isLoading, setIsLoading] = useState(false);
 
   const title = useMemo(() => {
+    const isIncome = type === "income";
+
     if (isIncome && !template) {
       return "Nuevo ingreso";
     } else if (!isIncome && !template) {
@@ -53,16 +56,16 @@ const TransactionFormDialog: React.FC<TransactionFormDialogProps> = ({ open, onC
       return "Editar gasto";
     }
     return "";
-  }, [template, isIncome]);
+  }, [template, type]);
 
   useEffect(() => {
     if (template) {
       setIsSinglePayment(template.is_single_payment);
-      setIsIncome(template.type === "income");
+      setType(template.type);
       setCategory(template.category_id || "none");
     } else {
       setIsSinglePayment(false);
-      setIsIncome(false);
+      setType("expense");
       setCategory("none");
     }
   }, [template]);
@@ -94,7 +97,7 @@ const TransactionFormDialog: React.FC<TransactionFormDialogProps> = ({ open, onC
       return;
     }
 
-    let newCategory: Category | null = null;
+    let newCategory: Category | undefined;
 
     if (formTemplate.categoryId === "add-category") {
       if (!formCategory.name) {
@@ -103,7 +106,7 @@ const TransactionFormDialog: React.FC<TransactionFormDialogProps> = ({ open, onC
       }
 
       try {
-        newCategory = await $Category.create({ name: formCategory.name, color: formCategory.color, user_id: user.uid });
+        newCategory = await categories.actions.create({ name: formCategory.name, color: formCategory.color, user_id: user.uid });
       } catch {
         setIsLoading(false);
         return;
@@ -120,7 +123,7 @@ const TransactionFormDialog: React.FC<TransactionFormDialogProps> = ({ open, onC
       is_single_payment: formTemplate.isSinglePayment,
       start_date: formTemplate.startDate,
       title: formTemplate.title,
-      type: (isIncome ? "income" : "expense") as TransactionType,
+      type: formTemplate.type,
     };
 
     if (template) {
@@ -149,101 +152,97 @@ const TransactionFormDialog: React.FC<TransactionFormDialogProps> = ({ open, onC
     <Dialog maxWidth="sm" open={open} fullWidth onClose={onClose}>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
-        <Stack id="transaction-form" component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-          <Stack spacing={2}>
-            <TextField label="Título" name={TransactionTemplateForm.formKeys.title} fullWidth required defaultValue={template?.title} />
-            <NumericFormat
-              customInput={TextField}
-              label="Monto"
-              name={TransactionTemplateForm.formKeys.amount}
-              sx={{ width: "100%" }}
-              slotProps={{ input: { startAdornment: <InputAdornment position="start">$</InputAdornment> } }}
-              thousandSeparator
-              fullWidth
-              required
-              defaultValue={template?.amount}
-            />
+        <Stack id="transaction-form" component="form" spacing={2} onSubmit={handleSubmit} sx={{ mt: 1 }}>
+          <ToggleRadio
+            options={[
+              { value: "expense", label: "Gasto" },
+              { value: "income", label: "Ingreso" },
+            ]}
+            name={TransactionTemplateForm.formKeys.type}
+            defaultValue={template?.type}
+            onChange={(value) => setType(value as TransactionType)}
+          />
+          <TextField label="Título" name={TransactionTemplateForm.formKeys.title} fullWidth required defaultValue={template?.title} />
+          <NumericFormat
+            customInput={TextField}
+            label="Monto"
+            name={TransactionTemplateForm.formKeys.amount}
+            sx={{ width: "100%" }}
+            slotProps={{ input: { startAdornment: <InputAdornment position="start">$</InputAdornment> } }}
+            thousandSeparator
+            fullWidth
+            required
+            defaultValue={template?.amount}
+          />
 
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name={TransactionTemplateForm.formKeys.type}
-                  checked={isIncome}
-                  onChange={(event) => setIsIncome(event.target.checked)}
-                />
-              }
-              label="Es un ingreso"
-            />
+          <FormControlLabel
+            control={
+              <Checkbox
+                name={TransactionTemplateForm.formKeys.isSinglePayment}
+                checked={isSinglePayment}
+                onChange={(event) => setIsSinglePayment(event.target.checked)}
+              />
+            }
+            label={type === "income" ? "Es un ingreso único" : "Es un gasto unico"}
+          />
 
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name={TransactionTemplateForm.formKeys.isSinglePayment}
-                  checked={isSinglePayment}
-                  onChange={(event) => setIsSinglePayment(event.target.checked)}
-                />
-              }
-              label={isIncome ? "Es un ingreso único" : "Es un gasto unico"}
-            />
-
-            {!isSinglePayment && (
-              <>
-                <Stack direction="row" spacing={2}>
-                  <TextField
-                    label="Se repite cada"
-                    type="number"
-                    name={TransactionTemplateForm.formKeys.frequencyValue}
-                    defaultValue={template?.frequency_value || 1}
-                    fullWidth
-                    required
-                  />
-                  <TextField
-                    select
-                    label="Unidad"
-                    name={TransactionTemplateForm.formKeys.frequencyUnit}
-                    defaultValue={template?.frequency_unit || "months"}
-                    fullWidth
-                    required
-                  >
-                    <MenuItem value="days">Días</MenuItem>
-                    <MenuItem value="weeks">Semanas</MenuItem>
-                    <MenuItem value="months">Meses</MenuItem>
-                    <MenuItem value="years">Años</MenuItem>
-                  </TextField>
-                </Stack>
+          <Collapse in={!isSinglePayment} unmountOnExit>
+            <Stack spacing={2}>
+              <Stack direction="row" spacing={2}>
                 <TextField
-                  label="Fecha inicial"
-                  type="date"
-                  name={TransactionTemplateForm.formKeys.startDate}
-                  defaultValue={template?.start_date ? dayjs(template.start_date).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}
+                  label="Se repite cada"
+                  type="number"
+                  name={TransactionTemplateForm.formKeys.frequencyValue}
+                  defaultValue={template?.frequency_value || 1}
                   fullWidth
                   required
                 />
-              </>
-            )}
+                <TextField
+                  select
+                  label="Unidad"
+                  name={TransactionTemplateForm.formKeys.frequencyUnit}
+                  defaultValue={template?.frequency_unit || "months"}
+                  fullWidth
+                  required
+                >
+                  <MenuItem value="days">Días</MenuItem>
+                  <MenuItem value="weeks">Semanas</MenuItem>
+                  <MenuItem value="months">Meses</MenuItem>
+                  <MenuItem value="years">Años</MenuItem>
+                </TextField>
+              </Stack>
+              <TextField
+                label="Fecha inicial"
+                type="date"
+                name={TransactionTemplateForm.formKeys.startDate}
+                defaultValue={template?.start_date ? dayjs(template.start_date).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}
+                fullWidth
+                required
+              />
+            </Stack>
+          </Collapse>
 
-            <TextField
-              label="Categoría"
-              name={TransactionTemplateForm.formKeys.categoryId}
-              value={category}
-              select
-              fullWidth
-              onChange={handleCategoryChange}
-            >
-              <MenuItem value="none">Sin categoría</MenuItem>
-              {categories.values.map((cat) => (
-                <MenuItem key={cat.id} value={cat.id}>
-                  {cat.name}
-                </MenuItem>
-              ))}
-              <Divider />
-              <MenuItem value="add-category">Agregar categoría</MenuItem>
-            </TextField>
+          <TextField
+            label="Categoría"
+            name={TransactionTemplateForm.formKeys.categoryId}
+            value={category}
+            select
+            fullWidth
+            onChange={handleCategoryChange}
+          >
+            <MenuItem value="none">Sin categoría</MenuItem>
+            {categories.values.map((cat) => (
+              <MenuItem key={cat.id} value={cat.id}>
+                {cat.name}
+              </MenuItem>
+            ))}
+            <Divider />
+            <MenuItem value="add-category">Agregar categoría</MenuItem>
+          </TextField>
 
-            {category === "add-category" && (
-              <TextField label="Nombre de la categoría" name={CategoryForm.formKeys.name} fullWidth required />
-            )}
-          </Stack>
+          <Collapse in={category === "add-category"} unmountOnExit>
+            <TextField label="Nombre de la categoría" name={CategoryForm.formKeys.name} fullWidth required />
+          </Collapse>
         </Stack>
       </DialogContent>
       <DialogActions>

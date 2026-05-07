@@ -1,29 +1,17 @@
 {
-  "version": "1.1",
+  "version": "2.0",
   "features": [
     {
-      "title": "¡Ahora puedes registrar tus ingresos!",
-      "description": "Lleva un control completo de tus finanzas con la nueva funcionalidad de ingresos."
+      "title": "Dashboard unificado y simplificado.",
+      "description": "Encuentra todos tus pagos e ingresos en un solo lugar de forma fácil e intuitiva."
     },
     {
-      "title": "Nueva vista de reportes con gráficos dinámicos.",
-      "description": "Visualiza tus datos de manera más clara con gráficos interactivos y personalizables."
+      "title": "Nuevo histórico de movimientos.",
+      "description": "Visualiza el historial completo de todas las transacciones realizadas para un mejor seguimiento."
     },
     {
-      "title": "Pagos únicos disponibles (one-time).",
-      "description": "Ahora puedes registrar pagos únicos de manera rápida y sencilla."
-    },
-    {
-      "title": "Soporte para categorías personalizadas.",
-      "description": "Crea y organiza tus propias categorías para un mejor control de tus datos."
-    },
-    {
-      "title": "Navegación entre meses y años.",
-      "description": "Explora tus datos históricos fácilmente con la nueva funcionalidad de navegación temporal."
-    },
-    {
-      "title": "Mejoras de rendimiento en la carga de datos.",
-      "description": "Experimenta tiempos de carga más rápidos y una navegación más fluida."
+      "title": "Rendimiento optimizado.",
+      "description": "Disfruta de una carga de datos más rápida y una experiencia de usuario mucho más fluida."
     }
   ],
   "image": "/whatsnew.jpg"

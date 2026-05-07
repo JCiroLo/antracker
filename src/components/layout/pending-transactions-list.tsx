@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Menu, MenuItem, Divider, ListItemIcon } from "@mui/material";
 import { sileo } from "sileo";
 import dayjs from "dayjs";
@@ -23,6 +23,8 @@ const PendingTransactionsList = () => {
   const [isLoading, setIsLoading] = useState({
     template: null as TransactionTemplate | null,
   });
+
+  const isSelectedTemplateIncome = useMemo(() => menuAnchor.transaction?.template.type === "income", [menuAnchor.transaction]);
 
   function handleMenuOpen(event: React.MouseEvent<HTMLElement>, transaction: TransactionSummary) {
     setMenuAnchor({
@@ -140,7 +142,7 @@ const PendingTransactionsList = () => {
           <ListItemIcon sx={{ color: "inherit" }}>
             <EditIcon fontSize="small" />
           </ListItemIcon>
-          Editar gasto
+          Editar {isSelectedTemplateIncome ? "ingreso" : "gasto"}
         </MenuItem>
         <MenuItem
           sx={{ color: "error.main" }}
@@ -153,7 +155,7 @@ const PendingTransactionsList = () => {
           <ListItemIcon>
             <TrashIcon fontSize="small" color="error" />
           </ListItemIcon>
-          Eliminar gasto
+          Eliminar {isSelectedTemplateIncome ? "ingreso" : "gasto"}
         </MenuItem>
       </Menu>
     </>
