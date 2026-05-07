@@ -1,8 +1,7 @@
 import React from "react";
 import { useSearchParams } from "react-router";
-import { Alert, Button, CircularProgress, Stack, TextField, Typography } from "@mui/material";
+import { Alert, Button, Checkbox, CircularProgress, FormControlLabel, Link, Stack, TextField, Typography } from "@mui/material";
 import { isSignInWithEmailLink, sendSignInLinkToEmail, signInWithEmailLink, type User } from "firebase/auth";
-import ConsentDialog from "@/components/dialogs/consent-dialog";
 import useSessionStore from "@/stores/use-session-store";
 import useAsyncEffect from "@/hooks/use-async-effect";
 import $User from "@/services/user";
@@ -14,7 +13,8 @@ const Signin = () => {
   const { setUser } = useSessionStore();
   const [searchParams] = useSearchParams();
 
-  const [step, setStep] = React.useState<"email" | "confirmation" | "consent">("email");
+  const [step, setStep] = React.useState<"email" | "confirmation">("email");
+  const [consent, setConsent] = React.useState(false);
   const [error, setError] = React.useState<"email" | "empty-email" | "confirmation" | "consent" | null>(null);
   const [email, setEmail] = React.useState("");
   const [loading, setLoading] = React.useState(false);
@@ -35,11 +35,6 @@ const Signin = () => {
     setEmail("");
   }
 
-  function handleConsentDecline() {
-    setStep("email");
-    setError("consent");
-  }
-
   async function handleEmailSubmit(event: React.FormEvent) {
     event.preventDefault();
 
@@ -48,10 +43,6 @@ const Signin = () => {
       return;
     }
 
-    setStep("consent");
-  }
-
-  async function handleConsentAccept() {
     setLoading(true);
     setStep("email");
 
@@ -149,7 +140,7 @@ const Signin = () => {
           alignItems="center"
           justifyContent="center"
           gap={2}
-          width="min(100%, 400px)"
+          width="min(100%, 800px)"
           marginX="auto"
           padding={2}
           borderRadius={2}
@@ -164,6 +155,26 @@ const Signin = () => {
                 <b>Si no recibes el correo, revisa tu bandeja de spam.</b>
               </Typography>
               <TextField value={email} placeholder="example@email.com" fullWidth onChange={handleEmailChange} />
+              <FormControlLabel
+                control={<Checkbox onChange={(event) => setConsent(event.target.checked)} />}
+                label={
+                  <Typography variant="caption">
+                    He leído y acepto la{" "}
+                    <Link href="/privacy-policy" underline="hover" target="_blank">
+                      política de Privacidad
+                    </Link>{" "}
+                    y autorizo el tratamiento de mis datos personales según lo establecido en ella. He leído y acepto los{" "}
+                    <Link href="/terms-and-conditions" underline="hover" target="_blank">
+                      términos y condiciones de uso
+                    </Link>
+                    . He leído y acepto el{" "}
+                    <Link href="/personal-data-processing-consent" underline="hover" target="_blank">
+                      consentimiento para el tratamiento de datos personales
+                    </Link>
+                    .
+                  </Typography>
+                }
+              />
               {error === "email" ? (
                 <Alert severity="error" variant="filled" sx={{ width: "100%" }}>
                   Ha ocurrido un error. Por favor, verifica que tu correo electrónico es correcto e intenta nuevamente.
@@ -178,7 +189,7 @@ const Signin = () => {
                   Por favor, acepta el consentimiento para el tratamiento de datos personales.
                 </Alert>
               ) : null}
-              <Button type="submit" loading={loading} fullWidth>
+              <Button type="submit" loading={loading} disabled={!email || !consent} fullWidth>
                 Enviar
               </Button>
             </>
@@ -195,8 +206,6 @@ const Signin = () => {
           ) : null}
         </Stack>
       )}
-
-      <ConsentDialog open={step === "consent"} email={email} onAccept={handleConsentAccept} onDecline={handleConsentDecline} />
     </>
   );
 };

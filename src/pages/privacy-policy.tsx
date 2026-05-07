@@ -3,7 +3,7 @@ import { Container, Typography, Paper, Stack, List, ListItem, Breadcrumbs, Link 
 
 const PrivacyPolicy = () => {
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="md">
       <Stack component={Paper} spacing={4} p={4} my={4}>
         <Breadcrumbs aria-label="breadcrumb">
           <Link component={RouterLink} to="/" underline="hover" color="inherit">
