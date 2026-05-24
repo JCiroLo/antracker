@@ -4,7 +4,14 @@ import { Container, Typography, Paper, Stack, List, ListItem, Breadcrumbs, Link,
 const PersonalDataProcessingConsent = () => {
   return (
     <Container maxWidth="md">
-      <Stack component={Paper} spacing={4} p={4} my={4}>
+      <Stack
+        component={Paper}
+        spacing={4}
+        sx={{
+          p: 4,
+          my: 4,
+        }}
+      >
         <Breadcrumbs aria-label="breadcrumb">
           <Link component={RouterLink} to="/" underline="hover" color="inherit">
             Antracker
@@ -15,7 +22,12 @@ const PersonalDataProcessingConsent = () => {
           <Typography component="h1" variant="h4">
             Consentimiento para el Tratamiento de Datos Personales - Ley 1581 de 2012 (Ley de Habeas Data) - República de Colombia
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+            }}
+          >
             Última actualización: 07/05/2026
           </Typography>
         </Stack>
@@ -27,7 +39,13 @@ const PersonalDataProcessingConsent = () => {
         </Alert>
 
         <Stack>
-          <Typography component="h3" variant="h6" fontWeight={700}>
+          <Typography
+            component="h3"
+            variant="h6"
+            sx={{
+              fontWeight: 700,
+            }}
+          >
             Datos que Recopilaremos
           </Typography>
           <Typography gutterBottom>
@@ -65,7 +83,13 @@ const PersonalDataProcessingConsent = () => {
         <Divider />
 
         <Stack>
-          <Typography component="h3" variant="h6" fontWeight={700}>
+          <Typography
+            component="h3"
+            variant="h6"
+            sx={{
+              fontWeight: 700,
+            }}
+          >
             Finalidades del Tratamiento
           </Typography>
           <List disablePadding>
@@ -90,7 +114,13 @@ const PersonalDataProcessingConsent = () => {
         <Divider />
 
         <Stack>
-          <Typography component="h3" variant="h6" fontWeight={700}>
+          <Typography
+            component="h3"
+            variant="h6"
+            sx={{
+              fontWeight: 700,
+            }}
+          >
             Sus Derechos
           </Typography>
           <Typography>De acuerdo con la Ley de Habeas Data, usted tiene derecho a:</Typography>
@@ -117,7 +147,13 @@ const PersonalDataProcessingConsent = () => {
         <Divider />
 
         <Stack spacing={2}>
-          <Typography component="h3" variant="h6" fontWeight={700}>
+          <Typography
+            component="h3"
+            variant="h6"
+            sx={{
+              fontWeight: 700,
+            }}
+          >
             Al continuar, aceptas que:
           </Typography>
           <Typography>

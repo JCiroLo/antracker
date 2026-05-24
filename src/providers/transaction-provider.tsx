@@ -2,8 +2,10 @@ import React, { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import $TransactionRecord from "@/services/transaction-record";
 import $TransactionTemplate from "@/services/transaction-template";
+import useSimpleQuery from "@/hooks/use-simple-query";
 import useSessionStore from "@/stores/use-session-store";
 import queryClient from "@/lib/query-client";
+import Env from "@/lib/env";
 import Logger from "@/lib/logger";
 import type {
   NewTransactionRecord,
@@ -15,13 +17,16 @@ import type {
   UpdateTransactionTemplate,
 } from "@/types/transaction";
 
+type RecordsQueryFetchOptions = {
+  page: number;
+};
+
 type TransactionContextType = {
   actions: {
     createRecord: (record: NewTransactionRecord) => Promise<void>;
     createTemplate: (template: NewTransactionTemplate) => Promise<void>;
     deleteRecord: (id: string, template: TransactionTemplate) => Promise<void>;
     deleteTemplate: (id: string) => Promise<void>;
-    refreshRecords: () => Promise<void>;
     refreshTemplates: () => Promise<void>;
     updateRecord: (id: string, record: UpdateTransactionRecord) => Promise<void>;
     updateTemplate: (id: string, template: UpdateTransactionTemplate) => Promise<void>;
@@ -29,7 +34,7 @@ type TransactionContextType = {
   isLoading: boolean;
   queries: {
     templates: ReturnType<typeof useQuery>;
-    records: ReturnType<typeof useQuery>;
+    records: ReturnType<typeof useSimpleQuery<Transaction[], RecordsQueryFetchOptions>>;
   };
   templates: TransactionSummary[];
   records: Transaction[];
@@ -61,20 +66,23 @@ const TransactionProvider: React.FC<TransactionProviderProps> = ({ children }) =
     },
   });
 
-  const records = useQuery({
+  const records = useSimpleQuery<Transaction[], RecordsQueryFetchOptions>({
     enabled: false,
-    queryKey: ["fetch-transaction-records", user?.uid],
-    queryFn: async () => {
+    keepPreviousData: true,
+    queryKey: [user?.uid],
+    queryFn: async (_, options) => {
       if (!user) {
         return [] as Transaction[];
       }
 
+      const limit = Env.TRANSACTIONS_LIMIT;
+
       const data = await $TransactionRecord.getAll({
-        limit: 20,
-        offset: 0,
+        limit,
+        offset: (options?.page ?? 1) * limit,
       });
 
-      Logger.log("fetched transactions", data);
+      Logger.log("fetched transactions records", data);
 
       return data;
     },
@@ -95,13 +103,18 @@ const TransactionProvider: React.FC<TransactionProviderProps> = ({ children }) =
       return;
     }
 
-    queryClient.setQueryData(["fetch-transaction-templates", user?.uid], (oldData: TransactionSummary[]) => {
-      if (!oldData) return oldData;
+    queryClient.setQueryData(
+      ["fetch-transaction-templates", user?.uid],
+      (oldData: TransactionSummary[]) => {
+        if (!oldData) return oldData;
 
-      return oldData.map((transactionSummary) =>
-        transactionSummary.template.id === template.id ? updatedTransactionSummary : transactionSummary,
-      ) as TransactionSummary[];
-    });
+        return oldData.map((transactionSummary) =>
+          transactionSummary.template.id === template.id
+            ? updatedTransactionSummary
+            : transactionSummary,
+        ) as TransactionSummary[];
+      },
+    );
   }
 
   async function refreshTemplates() {
@@ -117,11 +130,14 @@ const TransactionProvider: React.FC<TransactionProviderProps> = ({ children }) =
       return;
     }
 
-    queryClient.setQueryData(["fetch-transaction-templates", user?.uid], (oldData: TransactionSummary[]) => {
-      if (!oldData) return oldData;
+    queryClient.setQueryData(
+      ["fetch-transaction-templates", user?.uid],
+      (oldData: TransactionSummary[]) => {
+        if (!oldData) return oldData;
 
-      return [newTransactionSummary, ...oldData] as TransactionSummary[];
-    });
+        return [newTransactionSummary, ...oldData] as TransactionSummary[];
+      },
+    );
   }
 
   async function updateTemplate(id: string, template: UpdateTransactionTemplate) {
@@ -133,13 +149,16 @@ const TransactionProvider: React.FC<TransactionProviderProps> = ({ children }) =
       return;
     }
 
-    queryClient.setQueryData(["fetch-transaction-templates", user?.uid], (oldData: TransactionSummary[]) => {
-      if (!oldData) return oldData;
+    queryClient.setQueryData(
+      ["fetch-transaction-templates", user?.uid],
+      (oldData: TransactionSummary[]) => {
+        if (!oldData) return oldData;
 
-      return oldData.map((transactionSummary) =>
-        transactionSummary.template.id === id ? newTransactionSummary : transactionSummary,
-      ) as TransactionSummary[];
-    });
+        return oldData.map((transactionSummary) =>
+          transactionSummary.template.id === id ? newTransactionSummary : transactionSummary,
+        ) as TransactionSummary[];
+      },
+    );
   }
 
   async function deleteTemplate(id: string) {
@@ -147,23 +166,30 @@ const TransactionProvider: React.FC<TransactionProviderProps> = ({ children }) =
 
     Logger.log("deleted template", id);
 
-    queryClient.setQueryData(["fetch-transaction-templates", user?.uid], (oldData: TransactionSummary[]) => {
-      if (!oldData) return oldData;
+    queryClient.setQueryData(
+      ["fetch-transaction-templates", user?.uid],
+      (oldData: TransactionSummary[]) => {
+        if (!oldData) return oldData;
 
-      return oldData.filter((transactionSummary) => transactionSummary.template.id !== id) as TransactionSummary[];
-    });
-  }
-
-  async function refreshRecords() {
-    await queryClient.invalidateQueries({ queryKey: ["fetch-transaction-records", user?.uid] });
+        return oldData.filter(
+          (transactionSummary) => transactionSummary.template.id !== id,
+        ) as TransactionSummary[];
+      },
+    );
   }
 
   async function createRecord(record: NewTransactionRecord) {
-    const { template } = await $TransactionRecord.create(record);
+    const newRecord = await $TransactionRecord.create(record);
 
     Logger.log("created record", record);
 
-    await refreshTemplate(template);
+    records.mutateData((oldData) => {
+      if (!oldData) return [newRecord];
+
+      return [newRecord, ...oldData];
+    });
+
+    await refreshTemplate(newRecord.template);
   }
 
   async function updateRecord(id: string, record: UpdateTransactionRecord) {
@@ -175,10 +201,10 @@ const TransactionProvider: React.FC<TransactionProviderProps> = ({ children }) =
       return;
     }
 
-    queryClient.setQueryData(["fetch-transaction-records", user?.uid], (oldData: Transaction[]) => {
+    records.mutateData((oldData) => {
       if (!oldData) return oldData;
 
-      return oldData.map((transaction) => (transaction.id === id ? newRecord : transaction)) as Transaction[];
+      return oldData.map((transaction) => (transaction.id === id ? newRecord : transaction));
     });
   }
 
@@ -187,7 +213,7 @@ const TransactionProvider: React.FC<TransactionProviderProps> = ({ children }) =
 
     Logger.log("deleted record", id);
 
-    queryClient.setQueryData(["fetch-transaction-records", user?.uid], (oldData: Transaction[]) => {
+    records.mutateData((oldData) => {
       if (!oldData) return oldData;
 
       return oldData.filter((transaction) => transaction.id !== id) as Transaction[];
@@ -208,7 +234,6 @@ const TransactionProvider: React.FC<TransactionProviderProps> = ({ children }) =
           createTemplate,
           updateTemplate,
           deleteTemplate,
-          refreshRecords,
           createRecord,
           updateRecord,
           deleteRecord,

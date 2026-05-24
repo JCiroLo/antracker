@@ -1,40 +1,41 @@
+import { useMemo } from "react";
 import { Box, Stack, Typography, useTheme } from "@mui/material";
-import {
-  areaElementClasses,
-  chartsAxisHighlightClasses,
-  chartsTooltipClasses,
-  LineChart,
-  lineElementClasses,
-  lineHighlightElementClasses,
-  markElementClasses,
-} from "@mui/x-charts";
+import { lineClasses, chartsAxisHighlightClasses, chartsTooltipClasses, LineChart } from "@mui/x-charts";
 import ChartColorSwitch from "@/components/layout/chart-color-switch";
 import useSharedAnalytics from "@/hooks/use-shared-analytics";
 import CurrencyTools from "@/tools/currency-tools";
 
 const seriesPresets = {
-  expenses: { label: "Gastos", color: "error" as const },
-  incomes: { label: "Ingresos", color: "success" as const },
+  expenses: { label: "Déficit", color: "error" as const },
+  incomes: { label: "Superávit", color: "success" as const },
 };
 
 const CumulativeBalanceChart = () => {
   const theme = useTheme();
+  const { balanceAccumulative } = useSharedAnalytics();
 
-  const { cumulativeBalance } = useSharedAnalytics();
+  const data = useMemo(
+    () => ({
+      xAxis: balanceAccumulative.map((item) => item.date),
+      values: balanceAccumulative.map((item) => item.balance),
+    }),
+    [balanceAccumulative],
+  );
 
   return (
     <LineChart
       series={[
         {
-          data: cumulativeBalance.data,
+          data: data.values,
           curve: "bumpX",
           area: true,
+          label: seriesPresets.expenses.label,
           valueFormatter: (value) => CurrencyTools.format(value || 0),
         },
       ]}
       xAxis={[
         {
-          data: cumulativeBalance.xAxis,
+          data: data.xAxis,
           position: "none",
           scaleType: "point",
           valueFormatter: (value: string) => value,
@@ -47,17 +48,17 @@ const CumulativeBalanceChart = () => {
         tooltip: { sx: { [`.${chartsTooltipClasses.labelCell}`]: { display: "none" } } },
       }}
       sx={(theme) => ({
-        [`& .${markElementClasses.root}`]: {
+        [`& .${lineClasses.mark}`]: {
           display: "none",
         },
-        [`& .${lineHighlightElementClasses.root}`]: {
+        [`& .${lineClasses.highlight}`]: {
           display: "none",
         },
-        [`& .${areaElementClasses.root}`]: {
+        [`& .${lineClasses.area}`]: {
           fill: "url(#switch-color)",
           filter: "none",
         },
-        [`& .${lineElementClasses.root}`]: {
+        [`& .${lineClasses.line}`]: {
           strokeWidth: 0,
         },
         [`& .${chartsAxisHighlightClasses.root}`]: {
@@ -75,7 +76,13 @@ const CumulativeBalanceChart = () => {
 const CumulativeBalanceChartLegend: React.FC = () => {
   return (
     <Stack direction="row" spacing={2}>
-      <Stack direction="row" spacing={1} alignItems="center">
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{
+          alignItems: "center",
+        }}
+      >
         <Box
           component="span"
           sx={{
@@ -87,7 +94,13 @@ const CumulativeBalanceChartLegend: React.FC = () => {
         />
         <Typography variant="caption">{seriesPresets.expenses.label}</Typography>
       </Stack>
-      <Stack direction="row" spacing={1} alignItems="center">
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{
+          alignItems: "center",
+        }}
+      >
         <Box
           component="span"
           sx={{

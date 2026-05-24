@@ -4,7 +4,14 @@ import { Container, Typography, Paper, Stack, List, ListItem, Breadcrumbs, Link 
 const TermsAndConditions = () => {
   return (
     <Container maxWidth="md">
-      <Stack component={Paper} spacing={4} p={4} my={4}>
+      <Stack
+        component={Paper}
+        spacing={4}
+        sx={{
+          p: 4,
+          my: 4,
+        }}
+      >
         <Breadcrumbs aria-label="breadcrumb">
           <Link component={RouterLink} to="/" underline="hover" color="inherit">
             Antracker
@@ -16,7 +23,12 @@ const TermsAndConditions = () => {
           <Typography component="h1" variant="h4">
             Términos y Condiciones de Uso
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+            }}
+          >
             Última actualización: 17/10/2025
           </Typography>
         </Stack>
@@ -113,7 +125,11 @@ const TermsAndConditions = () => {
           <Typography component="h2" variant="h6">
             5. Propiedad Intelectual
           </Typography>
-          <Typography mb={2}>
+          <Typography
+            sx={{
+              mb: 2,
+            }}
+          >
             La aplicación y todo su contenido, incluyendo pero no limitado a texto, gráficos, logos, iconos, imágenes, clips de audio,
             compilaciones de datos y software, son propiedad de Antracker y están protegidos por las leyes de derechos de autor y marcas
             registradas.
@@ -175,7 +191,13 @@ const TermsAndConditions = () => {
               <Typography>• Daños indirectos, incidentales o consecuenciales</Typography>
             </ListItem>
           </List>
-          <Typography mt={2}>La aplicación se proporciona "tal como está" sin garantías de ningún tipo.</Typography>
+          <Typography
+            sx={{
+              mt: 2,
+            }}
+          >
+            La aplicación se proporciona "tal como está" sin garantías de ningún tipo.
+          </Typography>
         </Stack>
 
         <Stack>
@@ -210,7 +232,11 @@ const TermsAndConditions = () => {
               <Typography>• Solicitud del usuario</Typography>
             </ListItem>
           </List>
-          <Typography mt={2}>
+          <Typography
+            sx={{
+              mt: 2,
+            }}
+          >
             Usted puede terminar su cuenta en cualquier momento eliminando su cuenta desde la configuración de la aplicación.
           </Typography>
         </Stack>

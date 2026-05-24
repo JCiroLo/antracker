@@ -113,14 +113,16 @@ const Signin = () => {
     <>
       {verify ? (
         <Stack
-          alignItems="center"
-          justifyContent="center"
-          gap={2}
-          width="min(100%, 400px)"
-          marginX="auto"
-          padding={2}
-          borderRadius={2}
-          bgcolor="background.paper"
+          sx={{
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 2,
+            width: "min(100%, 400px)",
+            marginX: "auto",
+            padding: 2,
+            borderRadius: 2,
+            bgcolor: "background.paper",
+          }}
         >
           <Typography>Verificando tu correo electrónico...</Typography>
           {error === "confirmation" ? (
@@ -137,20 +139,28 @@ const Signin = () => {
       ) : (
         <Stack
           component="form"
-          alignItems="center"
-          justifyContent="center"
-          gap={2}
-          width="min(100%, 800px)"
-          marginX="auto"
-          padding={2}
-          borderRadius={2}
-          bgcolor="background.paper"
           onSubmit={step === "email" ? handleEmailSubmit : undefined}
+          sx={{
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 2,
+            width: "min(100%, 800px)",
+            marginX: "auto",
+            padding: 2,
+            borderRadius: 2,
+            bgcolor: "background.paper",
+          }}
         >
           {step === "email" ? (
             <>
               <Typography>Ingresa con tu correo electrónico</Typography>
-              <Typography variant="body2" fontWeight={300} color="text.secondary">
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: 300,
+                  color: "text.secondary",
+                }}
+              >
                 Te enviaremos un enlace de acceso para que puedas iniciar sesión facilmente.{" "}
                 <b>Si no recibes el correo, revisa tu bandeja de spam.</b>
               </Typography>
@@ -196,7 +206,13 @@ const Signin = () => {
           ) : step === "confirmation" ? (
             <>
               <Typography>Revisa tu Email</Typography>
-              <Typography variant="body2" fontWeight={300} color="text.secondary">
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: 300,
+                  color: "text.secondary",
+                }}
+              >
                 Te hemos enviado un enlace de acceso a tu correo electrónico. Sigue las instrucciones para iniciar sesión.
               </Typography>
               <Button variant="outlined" fullWidth onClick={handleReset}>

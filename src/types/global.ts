@@ -3,6 +3,7 @@ export type EnviromentVariables = {
   APP_URL: string;
   API_URL: string;
   MAINTENANCE_MODE: boolean;
+  TRANSACTIONS_LIMIT: number;
 };
 
 export type Dialog = "manage-transaction-template" | "remove-transaction-template" | "global-settings";
@@ -19,4 +20,12 @@ export type User = {
   id: string;
   privacy_policy_accepted: boolean;
   terms_and_conditions_accepted: boolean;
+};
+
+export type DateRangeKey = "this-month" | "last-7-days" | "last-30-days" | "last-90-days" | "last-5-years" | "custom";
+
+export type DateRange = {
+  label: string;
+  date: string;
+  enabled: boolean;
 };

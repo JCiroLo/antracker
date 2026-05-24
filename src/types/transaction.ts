@@ -25,6 +25,7 @@ export type TransactionRecord = {
   template_id: string;
   times: number;
   title: string;
+  type: TransactionType;
   user_id: string;
 };
 

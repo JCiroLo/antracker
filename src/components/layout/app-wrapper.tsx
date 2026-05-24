@@ -10,12 +10,14 @@ import Sidebar from "@/components/layout/sidebar";
 import useBoolean from "@/hooks/use-boolean";
 import useDialog from "@/hooks/use-dialog";
 import useTransactions from "@/hooks/use-transactions";
+import useSharedAnalytics from "@/hooks/use-shared-analytics";
 
 const AppWrapper = () => {
   const dialog = useDialog();
   const showActionsBar = useBoolean({ autoload: true, autoloadDelay: 300 });
 
   const transactions = useTransactions();
+  const analytics = useSharedAnalytics();
 
   return (
     <PageContainer>
@@ -37,7 +39,7 @@ const AppWrapper = () => {
         onClose={() => dialog.close("remove-transaction-template")}
       />
       <SettingsDialog open={dialog.isOpen("global-settings")} onClose={() => dialog.close("global-settings")} />
-      <Loader show={transactions.isLoading} />
+      <Loader show={transactions.isLoading || analytics.query.isLoading} />
     </PageContainer>
   );
 };

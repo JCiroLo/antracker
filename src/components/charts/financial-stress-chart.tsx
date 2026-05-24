@@ -1,35 +1,34 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Box, Stack, Typography, useTheme } from "@mui/material";
-import { areaElementClasses, LineChart, lineElementClasses, markElementClasses } from "@mui/x-charts/LineChart";
+import { lineClasses, LineChart } from "@mui/x-charts/LineChart";
 import { chartsAxisHighlightClasses } from "@mui/x-charts/ChartsAxisHighlight";
 import CurrencyTools from "@/tools/currency-tools";
 import useSharedAnalytics from "@/hooks/use-shared-analytics";
+import type { NumberValue } from "@mui/x-charts";
 
 const seriesPresets = {
   expenses: { label: "Gastos", color: "error" as const },
-  incomes: { label: "Ingresos", color: "success" as const },
 };
 
 const FinancialStressChart: React.FC = () => {
   const theme = useTheme();
-  const { balance } = useSharedAnalytics();
+  const { financialStress } = useSharedAnalytics();
+
+  const data = useMemo(
+    () => ({
+      xAxis: financialStress.map((item) => item.date),
+      values: financialStress.map((item) => item.expense),
+    }),
+    [financialStress],
+  );
 
   return (
     <LineChart
       series={[
         {
           label: seriesPresets.expenses.label,
-          data: balance.data.expenses,
+          data: data.values,
           color: theme.palette[seriesPresets.expenses.color].main,
-          curve: "bumpX",
-          area: true,
-
-          valueFormatter: (value) => CurrencyTools.format(value || 0),
-        },
-        {
-          label: seriesPresets.incomes.label,
-          data: balance.data.incomes,
-          color: theme.palette[seriesPresets.incomes.color].main,
           curve: "bumpX",
           area: true,
           valueFormatter: (value) => CurrencyTools.format(value || 0),
@@ -38,9 +37,9 @@ const FinancialStressChart: React.FC = () => {
       yAxis={[
         {
           position: "none",
-          domainLimit: (_, maxValue: number) => ({
-            min: -maxValue / 6,
-            max: maxValue,
+          domainLimit: (_, maxValue: NumberValue) => ({
+            min: -maxValue.valueOf() / 6,
+            max: maxValue.valueOf(),
           }),
         },
       ]}
@@ -48,7 +47,7 @@ const FinancialStressChart: React.FC = () => {
         {
           position: "none",
           scaleType: "point",
-          data: balance.xAxis,
+          data: data.xAxis,
           valueFormatter: (value: string) => value,
         },
       ]}
@@ -57,9 +56,9 @@ const FinancialStressChart: React.FC = () => {
         legend: { sx: { display: "none" } },
       }}
       sx={(theme) => ({
-        [`& .${markElementClasses.root}`]: { display: "none" },
-        [`& .${areaElementClasses.root}`]: { opacity: 0.1 },
-        [`& .${lineElementClasses.root}`]: { strokeWidth: 2 },
+        [`& .${lineClasses.mark}`]: { display: "none" },
+        [`& .${lineClasses.area}`]: { opacity: 0.1 },
+        [`& .${lineClasses.line}`]: { strokeWidth: 2 },
         [`& .${chartsAxisHighlightClasses.root}`]: {
           stroke: theme.palette.primary.main,
           strokeDasharray: "none",
@@ -73,7 +72,13 @@ const FinancialStressChart: React.FC = () => {
 const FinancialStressChartLegend: React.FC = () => {
   return (
     <Stack direction="row" spacing={2}>
-      <Stack direction="row" spacing={1} alignItems="center">
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{
+          alignItems: "center",
+        }}
+      >
         <Box
           component="span"
           sx={{
@@ -84,18 +89,6 @@ const FinancialStressChartLegend: React.FC = () => {
           }}
         />
         <Typography variant="caption">{seriesPresets.expenses.label}</Typography>
-      </Stack>
-      <Stack direction="row" spacing={1} alignItems="center">
-        <Box
-          component="span"
-          sx={{
-            width: 16,
-            height: 2,
-            borderRadius: 2,
-            bgcolor: (theme) => theme.palette[seriesPresets.incomes.color].main,
-          }}
-        />
-        <Typography variant="caption">{seriesPresets.incomes.label}</Typography>
       </Stack>
     </Stack>
   );

@@ -82,11 +82,17 @@ const ListSelector = <T extends ListSelectorOption>({ options, value, highlightV
         };
 
   return (
-    <Box display="flex" alignItems="center" justifyContent="center" gap={1}>
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 1,
+      }}
+    >
       <IconButton color="inherit" onClick={handlePrev}>
         <ChevronLeftIcon />
       </IconButton>
-
       <Box
         onClick={handleOpenMenu}
         sx={{
@@ -126,11 +132,9 @@ const ListSelector = <T extends ListSelectorOption>({ options, value, highlightV
           </motion.div>
         </AnimatePresence>
       </Box>
-
       <IconButton color="inherit" onClick={handleNext}>
         <ChevronRightIcon />
       </IconButton>
-
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
         {options.map((option) => (
           <MenuItem

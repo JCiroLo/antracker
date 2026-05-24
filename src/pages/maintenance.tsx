@@ -7,14 +7,14 @@ type MaintenanceBarProps = {
 const MaintenanceBar: React.FC<MaintenanceBarProps> = ({ position }) => {
   return (
     <Stack
-      position="fixed"
-      bottom={position === "bottom" ? 0 : undefined}
-      top={position === "top" ? 0 : undefined}
-      left={0}
-      right={0}
-      zIndex={1000}
-      height={40}
       sx={{
+        position: "fixed",
+        bottom: position === "bottom" ? 0 : undefined,
+        top: position === "top" ? 0 : undefined,
+        left: 0,
+        right: 0,
+        zIndex: 1000,
+        height: 40,
         opacity: 0.25,
         background: "repeating-linear-gradient(45deg, yellow 0, yellow 20px, black 20px, black 40px)",
         backgroundPosition: "center",
@@ -27,26 +27,31 @@ const MaintenanceBar: React.FC<MaintenanceBarProps> = ({ position }) => {
 const Maintenance = () => {
   return (
     <Stack
-      position="relative"
-      minHeight="100dvh"
-      alignItems="center"
-      justifyContent="center"
-      overflow="hidden"
       sx={{
-        backgroundColor: "background.default",
+        position: "relative",
+        minHeight: "100dvh",
+        alignItems: "center",
+        justifyContent: "center",
         overflow: "hidden",
+        backgroundColor: "background.default",
       }}
     >
       <Container maxWidth="sm" sx={{ position: "relative", zIndex: 1, textAlign: "center" }}>
-        <Typography variant="h1" fontWeight={800} marginBottom={2}>
+        <Typography
+          variant="h1"
+          sx={{
+            fontWeight: 800,
+            marginBottom: 2,
+          }}
+        >
           En mantenimiento
         </Typography>
 
         <Typography
-          color="text.secondary"
-          fontWeight={400}
-          marginBottom={4}
           sx={{
+            color: "text.secondary",
+            fontWeight: 400,
+            marginBottom: 4,
             lineHeight: 1.6,
             textWrap: "balance",
           }}

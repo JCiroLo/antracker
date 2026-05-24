@@ -14,16 +14,25 @@ const Home = () => {
     <>
       <ExpirationAlerts />
       {isFetching ? (
-        <Box height="100%" />
+        <Box
+          sx={{
+            height: "100%",
+          }}
+        />
       ) : (
         <List sx={{ flexGrow: 1, overflowY: "auto", marginTop: 1 }} disablePadding>
           {!hasExpenses ? (
             <Typography
               component="li"
               variant="body2"
-              color="text.secondary"
-              textAlign="center"
-              sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}
+              sx={{
+                color: "text.secondary",
+                textAlign: "center",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+              }}
             >
               No tienes pagos ni ingresos pendientes.
             </Typography>

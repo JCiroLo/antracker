@@ -1,44 +1,23 @@
-import React, { useMemo } from "react";
-import { useTheme } from "@mui/material";
+import { useMemo } from "react";
+import { Typography, useTheme } from "@mui/material";
 import { legendClasses } from "@mui/x-charts";
 import { PieChart } from "@mui/x-charts/PieChart";
-import useCategories from "@/hooks/use-categories";
-import useFilters from "@/hooks/use-filters";
-import useTransactions from "@/hooks/use-transactions";
+import useSharedAnalytics from "@/hooks/use-shared-analytics";
 import ColorTools from "@/tools/color-tools";
-import dayjs from "dayjs";
+import CurrencyTools from "@/tools/currency-tools";
 
 const IncomeDistributionChart = () => {
-  const { filters } = useFilters();
-
   const theme = useTheme();
-  const categories = useCategories();
-  const incomes = useTransactions();
+  const { incomeDistribution } = useSharedAnalytics();
 
-  const data = React.useMemo(() => {
-    const chartData = categories.values.map((category) => ({ label: category.name, id: category.id, value: 0 }));
-    const noCategoryItem = { label: "Sin categoría", id: "no-category", value: 0, color: theme.palette.action.disabled };
-
-    chartData.push(noCategoryItem);
-
-    const start = dayjs(filters.startDate).startOf("day");
-    const end = dayjs(filters.endDate).endOf("day");
-
-    incomes.records.forEach((record) => {
-      const p = dayjs(record.paid_date);
-      if (p.valueOf() >= start.valueOf() && p.valueOf() <= end.valueOf()) {
-        const category = chartData.find((cat) => cat.id === record.category_id);
-
-        if (category) {
-          category.value += record.amount;
-        } else {
-          noCategoryItem.value += record.amount;
-        }
-      }
-    });
-
-    return chartData;
-  }, [filters.startDate, filters.endDate, categories, incomes.records]);
+  const data = useMemo(
+    () =>
+      incomeDistribution.map((item) => ({
+        label: item.category,
+        value: item.total,
+      })),
+    [incomeDistribution],
+  );
 
   const palette = useMemo(() => ColorTools.palette(theme.palette.primary.main, data.length), [data.length, theme.palette.primary.main]);
 
@@ -63,5 +42,15 @@ const IncomeDistributionChart = () => {
     />
   );
 };
+
+const IncomeDistributionChartLegend: React.FC = () => {
+  const { totals } = useSharedAnalytics();
+
+  const total = useMemo(() => CurrencyTools.format(totals.income), [totals.income]);
+
+  return <Typography sx={{ fontWeight: 600, fontSize: 20 }}>{total}</Typography>;
+};
+
+export { IncomeDistributionChartLegend };
 
 export default IncomeDistributionChart;

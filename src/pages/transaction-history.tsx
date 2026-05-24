@@ -1,7 +1,8 @@
-import React from "react";
-import { Box, List, Typography } from "@mui/material";
-import useTransactions from "@/hooks/use-transactions";
+import { List, Stack, Typography } from "@mui/material";
 import TransactionList from "@/components/layout/transaction-list";
+import useTransactions from "@/hooks/use-transactions";
+import useInfiniteScroll from "@/hooks/use-infinite-scroll";
+import Logger from "@/lib/logger";
 
 const TransactionHistory = () => {
   const transactions = useTransactions();
@@ -9,26 +10,41 @@ const TransactionHistory = () => {
   const isFetching = transactions.isLoading;
   const hasRecords = transactions.records.length > 0;
 
-  React.useEffect(() => {
-    transactions.queries.records.refetch();
-  }, []);
+  const { observer } = useInfiniteScroll({
+    async onIntersection(page) {
+      Logger.log("fetching next page", page);
+      await transactions.queries.records.fetch({ page });
+    },
+  });
 
-  return isFetching ? (
-    <Box height="100%" />
-  ) : (
+  return (
     <List sx={{ flexGrow: 1, overflowY: "auto", marginTop: 1 }} disablePadding>
-      {!hasRecords ? (
+      {!isFetching && !hasRecords ? (
         <Typography
           component="li"
           variant="body2"
-          color="text.secondary"
-          textAlign="center"
-          sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}
+          sx={{
+            color: "text.secondary",
+            textAlign: "center",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "calc(100% - 16px)",
+          }}
         >
           No tienes movimientos registrados.
         </Typography>
       ) : null}
       <TransactionList />
+      <Stack
+        ref={observer.ref}
+        component="li"
+        sx={{
+          alignItems: "center",
+          marginTop: 2,
+          height: "1px",
+        }}
+      />
     </List>
   );
 };

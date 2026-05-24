@@ -58,7 +58,12 @@ const RemoveTransactionDialog: React.FC<RemoveTransactionDialogProps> = ({ open,
       <DialogContent>
         <Stack id="remove-transaction-form" component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <Typography>¿Estás seguro de que deseas eliminar este {template?.type === "expense" ? "gasto" : "ingreso"}? </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+            }}
+          >
             También se eliminarán los movimientos asociados. Esta acción no se puede deshacer.
           </Typography>
         </Stack>
