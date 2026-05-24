@@ -58,7 +58,7 @@ const Slider = styled(Box)<{ width: number; left: number }>(({ width, left, them
   width: `${width}px`,
   transform: `translateX(${left}px)`,
   backgroundColor: theme.palette.background.paper,
-  borderRadius: theme.shape.borderRadius * 0.5,
+  borderRadius: Number(theme.shape.borderRadius) * 0.5,
   transition: theme.transitions.create(["all"]),
 }));
 

@@ -38,13 +38,14 @@ const FeaturesModal = () => {
         </Button>
       </DialogActions>
       <Stack
-        position="absolute"
-        right={0}
-        width={{ xs: "100%", md: "25%" }}
-        height="100%"
         sx={{
+          position: "absolute",
+          right: 0,
+          width: { xs: "100%", md: "25%" },
+          height: "100%",
           opacity: { xs: 0.2, md: 0.75 },
           pointerEvents: "none",
+
           "@keyframes image-spin": {
             "0%": { transform: "rotate(0deg)" },
             "100%": { transform: "rotate(360deg)" },

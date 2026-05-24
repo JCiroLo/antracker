@@ -57,6 +57,7 @@ const PendingTransactionsList = () => {
         template_id: template.id,
         user_id: template.user_id,
         times: 1,
+        type: template.type,
       });
 
       sileo.success({ title: Contents.toast.success[template.type].checked, duration: 1000 });

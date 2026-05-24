@@ -11,7 +11,7 @@ const DateSelector = () => {
 
   function handleMonthChange(newMonth: string | number) {
     const d = dayjs(filters.startDate).month(Number(newMonth));
-    updateFilters({ 
+    updateFilters({
       startDate: d.startOf("month").format("YYYY-MM-DD"),
       endDate: d.endOf("month").format("YYYY-MM-DD"),
     });
@@ -19,7 +19,7 @@ const DateSelector = () => {
 
   function handleYearChange(newYear: string | number) {
     const d = dayjs(filters.startDate).year(Number(newYear));
-    updateFilters({ 
+    updateFilters({
       startDate: d.startOf("month").format("YYYY-MM-DD"),
       endDate: d.endOf("month").format("YYYY-MM-DD"),
     });

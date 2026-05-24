@@ -22,21 +22,20 @@ const ColorCircle = styled("span")<{ bgcolor: string; checked?: boolean }>(({ th
   outlineOffset: 2,
 }));
 
-const ColorRadio = React.forwardRef<HTMLButtonElement, React.ComponentProps<typeof MuiRadio> & ColorRadioProps>(function ColorRadio(
-  props,
-  ref
-) {
-  const { checked, value, bgcolor, ...other } = props;
+const ColorRadio = React.forwardRef<HTMLButtonElement, React.ComponentProps<typeof MuiRadio> & ColorRadioProps>(
+  function ColorRadio(props, ref) {
+    const { checked, value, bgcolor, ...other } = props;
 
-  return (
-    <Radio
-      ref={ref}
-      icon={<ColorCircle bgcolor={bgcolor} />}
-      checkedIcon={<ColorCircle bgcolor={bgcolor} checked={checked} />}
-      value={value}
-      {...other}
-    />
-  );
-});
+    return (
+      <Radio
+        ref={ref}
+        icon={<ColorCircle bgcolor={bgcolor} />}
+        checkedIcon={<ColorCircle bgcolor={bgcolor} checked={checked} />}
+        value={value}
+        {...other}
+      />
+    );
+  },
+);
 
 export default ColorRadio;

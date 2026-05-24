@@ -12,14 +12,16 @@ const Sidebar = forwardRef<HTMLDivElement>((_, ref) => {
     <Stack
       ref={ref}
       component="aside"
-      display={{ xs: "none", sm: "flex" }}
-      position="fixed"
-      top={0}
-      left={0}
-      bottom={0}
-      flexDirection="column"
-      justifyContent="space-between"
-      padding={1}
+      sx={{
+        display: { xs: "none", sm: "flex" },
+        position: "fixed",
+        top: 0,
+        left: 0,
+        bottom: 0,
+        flexDirection: "column",
+        justifyContent: "space-between",
+        padding: 1,
+      }}
     >
       <Stack component="nav">
         {/* <Zoom in>
@@ -28,11 +30,29 @@ const Sidebar = forwardRef<HTMLDivElement>((_, ref) => {
           </Fab>
         </Zoom> */}
       </Stack>
-      <Stack alignItems="flex-start" spacing={0.5} sx={{ opacity: 0.5 }}>
-        <Typography lineHeight={1} sx={{ writingMode: "vertical-lr", textOrientation: "mixed" }}>
+      <Stack
+        spacing={0.5}
+        sx={{
+          alignItems: "flex-start",
+          opacity: 0.5,
+        }}
+      >
+        <Typography
+          sx={{
+            lineHeight: 1,
+            writingMode: "vertical-lr",
+            textOrientation: "mixed",
+          }}
+        >
           antracker
         </Typography>
-        <Box component="img" src="/logo.png" width={16} />
+        <Box
+          component="img"
+          src="/logo.png"
+          sx={{
+            width: 16,
+          }}
+        />
       </Stack>
     </Stack>
   );

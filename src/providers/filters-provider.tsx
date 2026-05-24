@@ -1,13 +1,17 @@
 import React from "react";
 import dayjs from "dayjs";
+import { dateRanges } from "@/lib/constants";
+import type { DateRangeKey } from "@/types/global";
 
 type Filters = {
-  startDate: string;
-  endDate: string;
-  search: string;
-  type: "all" | "expense" | "income";
   categoryId: string | "all";
-  singlePayment: "all" | "single" | "recurring";
+  dateRange: DateRangeKey;
+  endDate: string;
+  hasChanged: boolean;
+  search: string;
+  singlePayment: "single" | "recurring" | "all";
+  startDate: string;
+  type: "expense" | "income" | "all";
 };
 
 type FiltersContextType = {
@@ -19,20 +23,28 @@ type FiltersProviderProps = {
   children: React.ReactNode;
 };
 
+const defaultDateRange = "this-month";
+
 const FiltersContext = React.createContext<FiltersContextType>(null!);
 
 const FiltersProvider: React.FC<FiltersProviderProps> = ({ children }) => {
   const [filters, setFilters] = React.useState<Filters>({
-    startDate: dayjs().startOf("month").format("YYYY-MM-DD"),
-    endDate: dayjs().endOf("month").format("YYYY-MM-DD"),
+    dateRange: defaultDateRange,
+    startDate: dateRanges[defaultDateRange].date,
+    endDate: dayjs().format("YYYY-MM-DD"),
     search: "",
     type: "all",
     categoryId: "all",
     singlePayment: "all",
+    hasChanged: false,
   });
 
   function updateFilters(newFilters: Partial<Filters>) {
     setFilters((prev) => ({ ...prev, ...newFilters }));
+
+    if (!newFilters.hasChanged) {
+      setFilters((prev) => ({ ...prev, hasChanged: true }));
+    }
   }
 
   return (

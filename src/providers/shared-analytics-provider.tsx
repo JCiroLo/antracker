@@ -1,78 +1,86 @@
 import React from "react";
-import ArrayTools from "@/tools/array-tools";
+import useFilters from "@/hooks/use-filters";
+import useSessionStore from "@/stores/use-session-store";
+import $Analytics from "@/services/analytics";
+import Logger from "@/lib/logger";
+import type {
+  Analytics,
+  BalanceAccumulative,
+  ExpenseDistribution,
+  FinancialStress,
+  IncomeDistribution,
+  Range,
+  Totals,
+} from "@/types/analytics";
+import useSimpleQuery from "@/hooks/use-simple-query";
 
 type SharedAnalyticsContextType = {
-  balance: {
-    data: {
-      expenses: number[];
-      incomes: number[];
-    };
-    xAxis: string[];
-  };
-  cumulativeBalance: {
-    xAxis: string[];
-    data: number[];
-  };
+  balanceAccumulative: BalanceAccumulative[];
+  expenseDistribution: ExpenseDistribution[];
+  financialStress: FinancialStress[];
+  incomeDistribution: IncomeDistribution[];
+  query: ReturnType<typeof useSimpleQuery<Analytics>>;
+  range: Range;
+  totals: Totals;
 };
 
 type SharedAnalyticsProviderProps = {
   children: React.ReactNode;
 };
 
+const defaultAnalytics: Analytics & { loaded: boolean } = {
+  loaded: false,
+  balance_accumulative: [],
+  expense_distribution: [],
+  financial_stress: [],
+  income_distribution: [],
+  range: { start: "", end: "" },
+  totals: { balance: 0, expenses: 0, income: 0 },
+};
+
 const SharedAnalyticsContext = React.createContext<SharedAnalyticsContextType>(null!);
 
 const SharedAnalyticsProvider: React.FC<SharedAnalyticsProviderProps> = ({ children }) => {
-  const balanceDistribution = React.useMemo(() => {
-    const data: { expenses: number[]; incomes: number[] } = { expenses: [], incomes: [] };
-    const xAxis: string[] = [];
+  const user = useSessionStore((state) => state.user);
+  const { filters } = useFilters();
 
-    // const start = dayjs(filters.startDate).startOf("day");
-    // const end = dayjs(filters.endDate).endOf("day");
+  const analytics = useSimpleQuery({
+    enabled: filters.hasChanged,
+    queryKey: [user?.uid, filters.startDate, filters.endDate],
+    queryFn: async () => {
+      if (!user) {
+        return defaultAnalytics;
+      }
 
-    // const diff = end.diff(start, "day") + 1;
-    // const clampedDiff = Math.min(Math.max(diff, 1), 366); // Hard limit to display max 1 year of days for performance
+      const data = await $Analytics.get({
+        startDate: filters.startDate,
+        endDate: filters.endDate,
+      });
 
-    // const days = Array.from({ length: clampedDiff }, () => 0);
-    // data = { expenses: Array.from(days), incomes: Array.from(days) };
-    // xAxis = Array.from({ length: clampedDiff }).map((_, i) => start.add(i, "day").format("DD/MM"));
+      Logger.log("fetched analytics", {
+        startDate: filters.startDate,
+        endDate: filters.endDate,
+        data,
+      });
 
-    // expenses.records.all.forEach((record) => {
-    //   const p = dayjs(record.paid_date);
-    //   if (p.valueOf() >= start.valueOf() && p.valueOf() <= end.valueOf()) {
-    //     const index = p.startOf("day").diff(start, "day");
-    //     if (index >= 0 && index < clampedDiff) {
-    //       data.expenses[index] += record.amount || 0;
-    //     }
-    //   }
-    // });
+      return data;
+    },
+  });
 
-    // incomes.records.all.forEach((record) => {
-    //   const p = dayjs(record.paid_date);
-    //   if (p.valueOf() >= start.valueOf() && p.valueOf() <= end.valueOf()) {
-    //     const index = p.startOf("day").diff(start, "day");
-    //     if (index >= 0 && index < clampedDiff) {
-    //       data.incomes[index] += record.amount || 0;
-    //     }
-    //   }
-    // });
-
-    return { data, xAxis };
-  }, []);
-
-  const cumulativeBalance = React.useMemo(() => {
-    const xAxis = balanceDistribution.xAxis;
-
-    return {
-      xAxis,
-      data: ArrayTools.cumulativeSum(
-        xAxis.map((_, index) => -balanceDistribution.data.expenses[index] + balanceDistribution.data.incomes[index]),
-        (item) => item,
-      ),
-    };
-  }, [balanceDistribution]);
+  const data = analytics.data || defaultAnalytics;
 
   return (
-    <SharedAnalyticsContext.Provider value={{ cumulativeBalance, balance: balanceDistribution }}>
+    <SharedAnalyticsContext.Provider
+      value={{
+        balanceAccumulative: data.balance_accumulative,
+        expenseDistribution: data.expense_distribution,
+        financialStress: data.financial_stress,
+        incomeDistribution: data.income_distribution,
+        range: data.range,
+        totals: data.totals,
+        query: analytics,
+      }}
+    >
       {children}
     </SharedAnalyticsContext.Provider>
   );

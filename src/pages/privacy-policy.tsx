@@ -4,7 +4,14 @@ import { Container, Typography, Paper, Stack, List, ListItem, Breadcrumbs, Link 
 const PrivacyPolicy = () => {
   return (
     <Container maxWidth="md">
-      <Stack component={Paper} spacing={4} p={4} my={4}>
+      <Stack
+        component={Paper}
+        spacing={4}
+        sx={{
+          p: 4,
+          my: 4,
+        }}
+      >
         <Breadcrumbs aria-label="breadcrumb">
           <Link component={RouterLink} to="/" underline="hover" color="inherit">
             Antracker
@@ -15,7 +22,12 @@ const PrivacyPolicy = () => {
           <Typography component="h1" variant="h4">
             Política de Privacidad
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+            }}
+          >
             Última actualización: 17/10/2025
           </Typography>
         </Stack>
@@ -23,7 +35,11 @@ const PrivacyPolicy = () => {
           <Typography component="h2" variant="h6">
             1. Información General
           </Typography>
-          <Typography mb={2}>
+          <Typography
+            sx={{
+              mb: 2,
+            }}
+          >
             Antracker ("nosotros", "nuestro" o "la aplicación") se compromete a proteger la privacidad y los datos personales de nuestros
             usuarios de acuerdo con la Ley 1581 de 2012 (Ley de Habeas Data) y el Decreto 1377 de 2013 de la República de Colombia.
           </Typography>
@@ -259,7 +275,11 @@ const PrivacyPolicy = () => {
           <Typography component="h2" variant="h6">
             12. Contacto
           </Typography>
-          <Typography mb={2}>
+          <Typography
+            sx={{
+              mb: 2,
+            }}
+          >
             Si tiene preguntas sobre esta Política de Privacidad o desea ejercer sus derechos, puede contactarnos en:
           </Typography>
           <List disablePadding>
@@ -280,7 +300,11 @@ const PrivacyPolicy = () => {
           <Typography component="h2" variant="h6">
             13. Autoridad de Control
           </Typography>
-          <Typography mb={2}>
+          <Typography
+            sx={{
+              mb: 2,
+            }}
+          >
             Si considera que el tratamiento de sus datos personales no cumple con la normativa vigente, puede presentar una queja ante la
             Superintendencia de Industria y Comercio (SIC) de Colombia:
           </Typography>

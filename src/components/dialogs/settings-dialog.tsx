@@ -126,7 +126,13 @@ const SettingsCategories = () => {
           key={category.id}
           sx={{ "&:hover": { backgroundColor: "action.hover" } }}
           secondaryAction={
-            <Stack direction="row" spacing={1} alignItems="center">
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{
+                alignItems: "center",
+              }}
+            >
               <IconButton color="inherit" disabled>
                 <TrashIcon />
               </IconButton>
@@ -142,7 +148,13 @@ const SettingsCategories = () => {
 
 const SettingsAbout = () => {
   return (
-    <Stack component="li" spacing={4} padding={2}>
+    <Stack
+      component="li"
+      spacing={4}
+      sx={{
+        padding: 2,
+      }}
+    >
       <Stack>
         <img src="/logo.png" alt="Antracker" width={32} height={32} />
         <Typography variant="body2">
@@ -153,26 +165,64 @@ const SettingsAbout = () => {
           seguimiento financiero personal.
         </Typography>
       </Stack>
-      <Stack direction="row" spacing={1} alignItems="center">
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{
+          alignItems: "center",
+        }}
+      >
         <Avatar src="/juanciro.jpg" alt="Juan Ciro" />
         <Stack spacing={0.5}>
-          <Typography variant="body1" fontWeight="bold" lineHeight={1}>
+          <Typography
+            variant="body1"
+            sx={{
+              fontWeight: "bold",
+              lineHeight: 1,
+            }}
+          >
             Juan Ciro
           </Typography>
-          <Link lineHeight={1} href="mailto:juanciro35@gmail.com">
+          <Link
+            href="mailto:juanciro35@gmail.com"
+            sx={{
+              lineHeight: 1,
+            }}
+          >
             juanciro35@gmail.com
           </Link>
         </Stack>
       </Stack>
       <Stack spacing={1}>
-        <Link component={RouterLink} to="/privacy-policy" variant="body2" color="text.secondary" underline="hover">
+        <Link
+          component={RouterLink}
+          to="/privacy-policy"
+          variant="body2"
+          underline="hover"
+          sx={{
+            color: "text.secondary",
+          }}
+        >
           Política de Privacidad
         </Link>
-        <Link component={RouterLink} to="/terms-and-conditions" variant="body2" color="text.secondary" underline="hover">
+        <Link
+          component={RouterLink}
+          to="/terms-and-conditions"
+          variant="body2"
+          underline="hover"
+          sx={{
+            color: "text.secondary",
+          }}
+        >
           Términos y Condiciones
         </Link>
       </Stack>
-      <Typography variant="body2" color="text.secondary">
+      <Typography
+        variant="body2"
+        sx={{
+          color: "text.secondary",
+        }}
+      >
         © {DateTools.year} Antracker v{APP_VERSION}. Todos los derechos reservados.
       </Typography>
     </Stack>
@@ -194,8 +244,8 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ open, onClose }) => {
 
   return (
     <Dialog maxWidth="sm" open={open} fullWidth onClose={onClose}>
-      <DialogTitle display={{ xs: "none", sm: "block" }}>Ajustes</DialogTitle>
-      <DialogTitle display={{ xs: "block", sm: "none" }}>{title}</DialogTitle>
+      <DialogTitle sx={{ display: { xs: "none", sm: "block" } }}>Ajustes</DialogTitle>
+      <DialogTitle sx={{ display: { xs: "block", sm: "none" } }}>{title}</DialogTitle>
       <DialogContent sx={{ paddingX: 0, paddingY: { xs: 1, sm: 2 } }}>
         <Stack direction={{ xs: "column", sm: "row" }}>
           <Tabs
