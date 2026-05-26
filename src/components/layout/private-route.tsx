@@ -1,5 +1,6 @@
 import React from "react";
 import { Navigate } from "react-router";
+import PageSkeleton from "@/components/layout/page-skeleton";
 import useSessionStore from "@/stores/use-session-store";
 import Logger from "@/lib/logger";
 import type { RouteScope } from "@/types/global";
@@ -19,7 +20,7 @@ const PrivateRoute = <P extends React.JSX.IntrinsicAttributes>({
   const isAuthenticated = Boolean(user);
 
   if (isLoading) {
-    return null;
+    return <PageSkeleton />;
   }
 
   if (scopes.includes("REQUIRES_AUTH") && !isAuthenticated) {
