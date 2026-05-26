@@ -15,10 +15,10 @@ type UseInfiniteScrollOptions = {
 };
 
 type UseInfiniteScrollReturn = {
-  observer: UseIntersectionObserverReturn;
-  loading: boolean;
   error: Error | null;
-  hasNextPage: boolean;
+  loading: boolean;
+  observer: UseIntersectionObserverReturn;
+  page: number;
   refetch: Refetch;
 };
 
@@ -26,7 +26,6 @@ type UseInfiniteScroll = (options: UseInfiniteScrollOptions) => UseInfiniteScrol
 
 const useInfiniteScroll: UseInfiniteScroll = ({ initialPage = 0, onIntersection }) => {
   const page = useRef(initialPage);
-  const hasNextPage = useRef(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
@@ -43,8 +42,6 @@ const useInfiniteScroll: UseInfiniteScroll = ({ initialPage = 0, onIntersection 
 
         page.current += 1;
       } catch (error) {
-        hasNextPage.current = false;
-
         setError(error as Error);
       }
 
@@ -60,7 +57,7 @@ const useInfiniteScroll: UseInfiniteScroll = ({ initialPage = 0, onIntersection 
     onIntersection: refetch,
   });
 
-  return { observer, loading: isLoading, error, hasNextPage: hasNextPage.current, refetch };
+  return { observer, error, refetch, page: page.current, loading: isLoading };
 };
 
 export default useInfiniteScroll;

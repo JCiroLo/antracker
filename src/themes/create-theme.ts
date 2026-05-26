@@ -24,7 +24,8 @@ const createTheme = ({ accentColor }: { accentColor: AccentColor }) =>
             main: "#7dcfff",
           },
           background: {
-            paper: "#2f344dc3",
+            paper: "#2f344d",
+            paperTransparent: "#2f344dc3",
             default: "#1a1b26",
           },
           text: {
@@ -53,7 +54,8 @@ const createTheme = ({ accentColor }: { accentColor: AccentColor }) =>
             main: "#4abaaf",
           },
           background: {
-            paper: "#d2d4def5",
+            paper: "#d2d4de",
+            paperTransparent: "#d2d4def5",
             default: "#e6e7ed",
           },
           text: {
@@ -129,11 +131,13 @@ const createTheme = ({ accentColor }: { accentColor: AccentColor }) =>
               elevation: 0,
               sx: {
                 borderRadius: 2,
+                backgroundColor: "background.paperTransparent",
+                backdropFilter: "blur(16px) saturate(150%)",
               },
             },
             backdrop: {
               sx: {
-                backgroundColor: "rgba(0, 0, 0, 0.2)",
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
                 backdropFilter: "blur(4px) saturate(150%)",
               },
             },
@@ -165,13 +169,6 @@ const createTheme = ({ accentColor }: { accentColor: AccentColor }) =>
         styleOverrides: {
           root: {
             fontWeight: 500,
-          },
-        },
-      },
-      MuiPaper: {
-        styleOverrides: {
-          root: {
-            backdropFilter: "blur(16px) saturate(200%)",
           },
         },
       },

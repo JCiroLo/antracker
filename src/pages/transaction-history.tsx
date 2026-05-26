@@ -10,7 +10,7 @@ const TransactionHistory = () => {
   const isFetching = transactions.isLoading;
   const hasRecords = transactions.records.length > 0;
 
-  const { observer } = useInfiniteScroll({
+  const infiniteScroll = useInfiniteScroll({
     async onIntersection(page) {
       Logger.log("fetching next page", page);
       await transactions.queries.records.fetch({ page });
@@ -20,24 +20,25 @@ const TransactionHistory = () => {
   return (
     <List sx={{ flexGrow: 1, overflowY: "auto", marginTop: 1 }} disablePadding>
       {!isFetching && !hasRecords ? (
-        <Typography
+        <Stack
           component="li"
-          variant="body2"
-          sx={{
-            color: "text.secondary",
-            textAlign: "center",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "calc(100% - 16px)",
-          }}
+          spacing={1}
+          sx={{ justifyContent: "center", alignItems: "center", height: "calc(100% - 32px)" }}
         >
-          No tienes movimientos registrados.
-        </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+              textAlign: "center",
+            }}
+          >
+            No tienes movimientos registrados.
+          </Typography>
+        </Stack>
       ) : null}
       <TransactionList />
       <Stack
-        ref={observer.ref}
+        ref={infiniteScroll.observer.ref}
         component="li"
         sx={{
           alignItems: "center",
