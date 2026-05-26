@@ -55,7 +55,7 @@ const useSimpleQuery = <Data, FetchOptions = unknown>({
             }
           }
 
-          return oldData;
+          return result as Data;
         });
         setIsLoading(false);
         setHasLoaded(true);
@@ -68,6 +68,8 @@ const useSimpleQuery = <Data, FetchOptions = unknown>({
         setIsLoading(false);
         setHasLoaded(true);
       }
+
+      throw error;
     }
   }, []);
 
